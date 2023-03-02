@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Candy Crash</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* Scale canvas with resize attribute to full size */
+        canvas[resize] {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="./paper/dist/paper.js"></script>
+    <script type="text/paperscript" canvas="canvas">
+        var mousePoint = view.center;
+        var amount = 25;
+        var blue = new Color(0, 0, 255);
+        var white = new Color(255,255,255);
+        var colors = [blue, white, blue, white];
+
+        var currB = 12;
+        var flag = 1;
+
+        for (var i = 0; i < amount; i++) {
+      
+            var rect = new Rectangle([0, 0], [25, 25]);
+            rect.center = mousePoint;
+            var path = new Path.Rectangle(rect, 6);
+            path.fillColor = new Color(0, 0, 0);
+            
+            var scale = (1 - i / amount) * 20;
+            path.scale(scale);
+        }
+        
+        function onMouseMove(event) {
+            mousePoint = event.point;
+        }
+        
+        var children = project.activeLayer.children;
+        function onFrame(event) {
+
+            currB += (flag);
+            if(currB >= 255){
+                flag = -1;
+            } else if(currB <= 0){
+                flag = 1;
+            }
+
+
+
+            for (var i = 0, l = children.length; i < l; i++) {
+              
+                var item = children[i];
+                var delta = (mousePoint - item.position) / (i + 5);
+                item.rotate((( i) / 10) );
+                if(i%3==0){
+                    item.fillColor = new Color(currB/255, currB/255,1-currB/255);
+                } else if(i%3==1){
+                    item.fillColor = new Color(currB/255, 1-currB/255,currB/255);
+                } else {
+                    item.fillColor = new Color(1-currB/255, currB/255,currB/255);
+
+                }
+                if (delta.length > 0.1)
+                    item.position += delta;
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="canvas" resize hidpi="off" style="background:black"></canvas>
+</body>
+</html>
